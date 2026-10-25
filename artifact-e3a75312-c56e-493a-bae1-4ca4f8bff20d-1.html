@@ -1,0 +1,238 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNACKSAT-3 Interference Mitigation Simulator</title>
+    <style>
+        :root { --bg: #0b1120; --panel: #1e293b; --text: #e2e8f0; --danger: #ef4444; --safe: #22c55e; --warn: #eab308; --accent: #38bdf8; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h1 { color: var(--accent); margin-bottom: 5px; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1100px; width: 100%; justify-content: center; margin-top: 20px; }
+        .panel { background: var(--panel); padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); flex: 1; min-width: 300px; }
+        
+        /* Controls */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; transition: 0.3s; }
+        .toggle-row.active { border-left: 4px solid var(--safe); background: rgba(34, 197, 94, 0.1); }
+        .toggle-label { font-weight: bold; }
+        .iso-val { color: var(--accent); font-size: 0.9em; }
+        .toggle-switch { position: relative; width: 50px; height: 26px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #475569; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background: var(--safe); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Visuals */
+        .visual-container { position: relative; height: 250px; background: #0f172a; border: 2px solid #334155; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .cubesat { width: 120px; height: 120px; background: #64748b; position: relative; transition: 0.5s; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .cubesat::before { content: "1U BUS"; position: absolute; top: 40%; left: 15%; color: white; font-size: 12px; font-weight: bold; }
+        
+        .ant-vhf, .ant-uhf { width: 8px; height: 60px; position: absolute; top: -60px; transition: 0.5s; }
+        .ant-vhf { left: 20px; background: var(--accent); } /* VHF (AIS) */
+        .ant-uhf { right: 20px; background: var(--danger); } /* UHF (Tx) */
+
+        /* Mitigation Visuals */
+        .shield-wall { width: 10px; height: 120px; background: #94a3b8; position: absolute; left: 55%; top: 0; opacity: 0; transition: 0.5s; }
+        .shield-wall.active { opacity: 1; box-shadow: 0 0 5px #fff; }
+        
+        .filter-icon { position: absolute; left: 15px; top: 35px; font-size: 20px; opacity: 0; transition: 0.3s; }
+        .filter-icon.active { opacity: 1; }
+
+        /* Meter */
+        .meter-container { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+        .meter-bar { width: 20px; height: 200px; background: #334155; position: relative; border-radius: 10px; overflow: hidden; border: 2px solid #475569; }
+        .meter-fill { position: absolute; bottom: 0; width: 100%; height: 50%; background: var(--danger); transition: 0.5s; border-radius: 8px; box-shadow: 0 0 10px var(--danger); }
+        .meter-labels { display: flex; flex-direction: column; justify-content: space-between; height: 200px; font-size: 0.75rem; color: #94a3b8; }
+        .meter-line { position: absolute; width: 100%; height: 1px; background: var(--safe); bottom: 10%; left: 0; border-top: 1px dashed var(--safe); }
+        
+        .status-text { font-size: 1.2rem; font-weight: bold; margin-top: 10px; text-align: center; }
+        .data-display { font-family: monospace; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <h1>🛰️ KNACKSAT-3: AIS Interference Mitigation</h1>
+    <p style="color:#94a3b8; max-width:600px; text-align:center;">
+        Simulate how UHF transmission blinds the VHF AIS receiver, and how engineering methods stop it.
+    </p>
+
+    <div class="container">
+        <!-- Controls Panel -->
+        <div class="panel">
+            <h2 style="margin-top:0; border-bottom:1px solid #334155; padding-bottom:10px;">Mitigation Controls</h2>
+            
+            <div class="toggle-row" id="row-ortho">
+                <div>
+                    <div class="toggle-label">Orthogonal Placement (90°)</div>
+                    <div class="iso-val">+25 dB Isolation</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="chk-ortho" onchange="updateSim()"><span class="slider"></span></label>
+            </div>
+
+            <div class="toggle-row" id="row-filter">
+                <div>
+                    <div class="toggle-label">Front-End SAW Filter</div>
+                    <div class="iso-val">+90 dB Isolation</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="chk-filter" onchange="updateSim()"><span class="slider"></span></label>
+            </div>
+
+            <div class="toggle-row" id="row-shield">
+                <div>
+                    <div class="toggle-label">RF Shielding Cans</div>
+                    <div class="iso-val">+20 dB Isolation</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="chk-shield" onchange="updateSim()"><span class="slider"></span></label>
+            </div>
+
+            <div class="toggle-row" id="row-blank">
+                <div>
+                    <div class="toggle-label">Time-Division (Blanking)</div>
+                    <div class="iso-val">+60 dB Isolation</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="chk-blank" onchange="updateSim()"><span class="slider"></span></label>
+            </div>
+
+            <div class="data-display">
+                <div>Total Isolation: <span id="val-iso">5</span> dB</div>
+                <div>UHF Tx Power: 1W (30 dBm)</div>
+                <div>Leakage at Rx: <span id="val-leak">25</span> dBm</div>
+            </div>
+        </div>
+
+        <!-- Visual & Status Panel -->
+        <div class="panel" style="flex: 1.2;">
+            <h2 style="margin-top:0; border-bottom:1px solid #334155; padding-bottom:10px;">System Status</h2>
+            
+            <div class="visual-container">
+                <div class="cubesat" id="sat-body">
+                    <div class="ant-vhf" id="ant-vhf"></div>
+                    <div class="ant-uhf" id="ant-uhf"></div>
+                    <div class="shield-wall" id="shield-wall"></div>
+                    <div class="filter-icon" id="filter-icon">📡🛡️</div>
+                </div>
+            </div>
+
+            <div class="status-text" id="status-text" style="color: var(--danger);">⚠️ AIS RECEIVER DESTROYED</div>
+
+            <div class="meter-container">
+                <div class="meter-labels">
+                    <span>+30 dBm</span>
+                    <span>0 dBm</span>
+                    <span>-50 dBm</span>
+                    <span>-100 dBm</span>
+                </div>
+                <div class="meter-bar">
+                    <div class="meter-line" title="Safe Threshold (-70 dBm)"></div>
+                    <div class="meter-fill" id="meter-fill"></div>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--safe);">
+                    <strong>Safe Zone:</strong><br>Below -70 dBm<br>(Noise Floor)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulation Physics Constants
+        const TX_POWER_DBM = 30; // 1 Watt
+        const BASE_SPACING_ISO = 5; // Isolation from 17.3cm spacing only
+        const SAFE_THRESHOLD = -70; // dBm
+
+        function updateSim() {
+            const isOrtho = document.getElementById('chk-ortho').checked;
+            const isFilter = document.getElementById('chk-filter').checked;
+            const isShield = document.getElementById('chk-shield').checked;
+            const isBlank = document.getElementById('chk-blank').checked;
+
+            // 1. Calculate Total Isolation
+            let iso = BASE_SPACING_ISO;
+            if(isOrtho) iso += 25;
+            if(isFilter) iso += 90;
+            if(isShield) iso += 20;
+            if(isBlank) iso += 60;
+
+            // 2. Calculate Leakage at Receiver Input
+            let leakage = TX_POWER_DBM - iso;
+
+            // 3. Update Text Data
+            document.getElementById('val-iso').innerText = iso;
+            document.getElementById('val-leak').innerText = leakage;
+
+            // 4. Update Visual Toggles
+            document.getElementById('row-ortho').classList.toggle('active', isOrtho);
+            document.getElementById('row-filter').classList.toggle('active', isFilter);
+            document.getElementById('row-shield').classList.toggle('active', isShield);
+            document.getElementById('row-blank').classList.toggle('active', isBlank);
+
+            // 5. Update Satellite Visualization
+            const uhfAnt = document.getElementById('ant-uhf');
+            const vhfAnt = document.getElementById('ant-vhf');
+            
+            // Orthogonal: Rotate UHF 90 degrees
+            uhfAnt.style.transform = isOrtho ? "rotate(90deg) translateX(10px)" : "rotate(0deg)";
+            vhfAnt.style.transform = isOrtho ? "rotate(-90deg) translateX(-10px)" : "rotate(0deg)";
+            
+            // Shielding: Show wall
+            document.getElementById('shield-wall').classList.toggle('active', isShield);
+            document.getElementById('filter-icon').classList.toggle('active', isFilter);
+
+            // Blanking: Pulse UHF antenna to show it's "Off"
+            uhfAnt.style.opacity = isBlank ? "0.3" : "1.0";
+            uhfAnt.style.boxShadow = isBlank ? "none" : "0 0 10px var(--danger)";
+
+            // 6. Update Safety Meter & Status
+            const meterFill = document.getElementById('meter-fill');
+            const statusText = document.getElementById('status-text');
+
+            // Map -100 to +40 dBm to percentage (0% to 100%)
+            // Range is 140dB. 0dBm is roughly 64% up the bar.
+            let pct = ((leakage + 100) / 140) * 100;
+            pct = Math.max(0, Math.min(100, pct)); // Clamp
+            
+            meterFill.style.height = pct + "%";
+
+            if (leakage <= SAFE_THRESHOLD) {
+                statusText.innerText = "✅ AIS RECEIVER SAFE";
+                statusText.style.color = "var(--safe)";
+                meterFill.style.backgroundColor = "var(--safe)";
+                meterFill.style.boxShadow = "0 0 10px var(--safe)";
+            } else if (leakage <= 0) {
+                statusText.innerText = "⚠️ HIGH RISK OF SATURATION";
+                statusText.style.color = "var(--warn)";
+                meterFill.style.backgroundColor = "var(--warn)";
+            } else {
+                statusText.innerText = "🔥 AIS RECEIVER DESTROYED";
+                statusText.style.color = "var(--danger)";
+                meterFill.style.backgroundColor = "var(--danger)";
+            }
+        }
+
+        // Initialize
+        updateSim();
+    </script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
