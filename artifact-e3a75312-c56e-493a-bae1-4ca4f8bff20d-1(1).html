@@ -1,238 +1,121 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<style>
-								body {
-									background-color: white; /* Ensure the iframe has a white background */
-								}
-
-								
-							</style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNACKSAT-3 Interference Mitigation Simulator</title>
-    <style>
-        :root { --bg: #0b1120; --panel: #1e293b; --text: #e2e8f0; --danger: #ef4444; --safe: #22c55e; --warn: #eab308; --accent: #38bdf8; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        h1 { color: var(--accent); margin-bottom: 5px; }
-        .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1100px; width: 100%; justify-content: center; margin-top: 20px; }
-        .panel { background: var(--panel); padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); flex: 1; min-width: 300px; }
-        
-        /* Controls */
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; transition: 0.3s; }
-        .toggle-row.active { border-left: 4px solid var(--safe); background: rgba(34, 197, 94, 0.1); }
-        .toggle-label { font-weight: bold; }
-        .iso-val { color: var(--accent); font-size: 0.9em; }
-        .toggle-switch { position: relative; width: 50px; height: 26px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #475569; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background: var(--safe); }
-        input:checked + .slider:before { transform: translateX(24px); }
-
-        /* Visuals */
-        .visual-container { position: relative; height: 250px; background: #0f172a; border: 2px solid #334155; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .cubesat { width: 120px; height: 120px; background: #64748b; position: relative; transition: 0.5s; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-        .cubesat::before { content: "1U BUS"; position: absolute; top: 40%; left: 15%; color: white; font-size: 12px; font-weight: bold; }
-        
-        .ant-vhf, .ant-uhf { width: 8px; height: 60px; position: absolute; top: -60px; transition: 0.5s; }
-        .ant-vhf { left: 20px; background: var(--accent); } /* VHF (AIS) */
-        .ant-uhf { right: 20px; background: var(--danger); } /* UHF (Tx) */
-
-        /* Mitigation Visuals */
-        .shield-wall { width: 10px; height: 120px; background: #94a3b8; position: absolute; left: 55%; top: 0; opacity: 0; transition: 0.5s; }
-        .shield-wall.active { opacity: 1; box-shadow: 0 0 5px #fff; }
-        
-        .filter-icon { position: absolute; left: 15px; top: 35px; font-size: 20px; opacity: 0; transition: 0.3s; }
-        .filter-icon.active { opacity: 1; }
-
-        /* Meter */
-        .meter-container { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
-        .meter-bar { width: 20px; height: 200px; background: #334155; position: relative; border-radius: 10px; overflow: hidden; border: 2px solid #475569; }
-        .meter-fill { position: absolute; bottom: 0; width: 100%; height: 50%; background: var(--danger); transition: 0.5s; border-radius: 8px; box-shadow: 0 0 10px var(--danger); }
-        .meter-labels { display: flex; flex-direction: column; justify-content: space-between; height: 200px; font-size: 0.75rem; color: #94a3b8; }
-        .meter-line { position: absolute; width: 100%; height: 1px; background: var(--safe); bottom: 10%; left: 0; border-top: 1px dashed var(--safe); }
-        
-        .status-text { font-size: 1.2rem; font-weight: bold; margin-top: 10px; text-align: center; }
-        .data-display { font-family: monospace; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
-    </style>
+<meta charset="utf-8">
+<title>KNACKSAT-3 AIS / UHF Coexistence Simulator (v0.2, corrected)</title>
+<style>
+  :root { --bg:#0b1120; --panel:#1e293b; --text:#e2e8f0; --muted:#94a3b8; --danger:#ef4444; --safe:#22c55e; --warn:#eab308; --accent:#38bdf8; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display:flex; flex-direction:column; align-items:center; }
+  h1 { color: var(--accent); margin: 0 0 4px; font-size: 1.5rem; }
+  p.sub { color: var(--muted); margin: 0 0 16px; max-width: 900px; text-align:center; }
+  .wrap { display:flex; flex-wrap:wrap; gap:20px; max-width:1100px; width:100%; }
+  .panel { background: var(--panel); border-radius: 12px; padding: 18px; flex:1; min-width:320px; }
+  .row { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; margin-bottom:8px; border-radius:8px; background: rgba(255,255,255,.04); }
+  .row.on { border-left: 4px solid var(--safe); background: rgba(34,197,94,.08); }
+  .row small { color: var(--muted); display:block; font-weight:normal; }
+  .row b { font-size: .95rem; }
+  input[type=checkbox] { width: 20px; height: 20px; }
+  select, input[type=range] { width: 100%; }
+  .kv { font-family: monospace; font-size: .88rem; background: rgba(0,0,0,.3); padding: 10px; border-radius: 6px; line-height: 1.6; }
+  .status { font-weight: bold; font-size: 1.05rem; margin: 6px 0 12px; }
+  .ok { color: var(--safe); } .bad { color: var(--danger); } .warn { color: var(--warn); }
+  .bar { height: 14px; border-radius: 7px; background:#334155; position:relative; overflow:hidden; margin:4px 0 10px; }
+  .bar > span { position:absolute; left:0; top:0; bottom:0; border-radius:7px; }
+  .note { color: var(--muted); font-size: .8rem; margin-top: 14px; }
+</style>
 </head>
 <body>
+<h1>KNACKSAT-3: AIS 162 MHz / UHF 401 MHz coexistence on a 1U</h1>
+<p class="sub">Two crossed dipoles (4 elements) on the +Z face. Antenna coupling is taken from the NEC-2 model
+(sim/antenna_coupling_nec.py, 95th percentile of 200 deployments). Two separate problems are shown:
+<b>blocking</b> by the 401 MHz carrier (cured by SAW filters) and <b>in-band UHF noise at 162 MHz</b>
+(cured by a TX-side filter or time-division; an AIS SAW cannot remove it).</p>
 
-    <h1>🛰️ KNACKSAT-3: AIS Interference Mitigation</h1>
-    <p style="color:#94a3b8; max-width:600px; text-align:center;">
-        Simulate how UHF transmission blinds the VHF AIS receiver, and how engineering methods stop it.
-    </p>
+<div class="wrap">
+  <div class="panel">
+    <h3>Configuration</h3>
+    <div class="row"><div><b>UHF TX power</b><small>dBm at transmitter port</small></div>
+      <select id="ptx"><option value="33" selected>33 dBm (2 W)</option><option value="30">30 dBm (1 W)</option></select></div>
+    <div class="row"><div><b>Feed-line crossing gap on antenna PCB</b><small>sets antenna-to-antenna coupling</small></div>
+      <select id="gap"><option value="3" selected>3 mm (design, worst)</option><option value="10">10 mm</option></select></div>
+    <div class="row" id="r-pre"><div><b>SAW before LNA</b><small>40 dB at 401 MHz, adds 2.5 dB to NF</small></div><input type="checkbox" id="pre" checked></div>
+    <div class="row" id="r-post"><div><b>SAW after LNA</b><small>40 dB at 401 MHz (total capped at 65 dB by PCB bypass)</small></div><input type="checkbox" id="post" checked></div>
+    <div class="row" id="r-can"><div><b>Shielding cans + filtered supplies</b><small>board leakage path 70 dB &rarr; 90 dB</small></div><input type="checkbox" id="can" checked></div>
+    <div class="row" id="r-txf"><div><b>TX-side filter at UHF output</b><small>50 dB rejection at 162 MHz</small></div><input type="checkbox" id="txf"></div>
+    <div class="row" id="r-tdd"><div><b>Time-division (AIS blanked during UHF TX)</b><small>TX_ACTIVE line, 5 ms pre / 10 ms post guard</small></div><input type="checkbox" id="tdd" checked></div>
+    <div class="row"><div><b>UHF PA noise at 162 MHz</b><small id="nlbl">-150 dBc/Hz (assumed - measure)</small></div></div>
+    <input type="range" id="noise" min="-170" max="-130" step="5" value="-150">
+  </div>
 
-    <div class="container">
-        <!-- Controls Panel -->
-        <div class="panel">
-            <h2 style="margin-top:0; border-bottom:1px solid #334155; padding-bottom:10px;">Mitigation Controls</h2>
-            
-            <div class="toggle-row" id="row-ortho">
-                <div>
-                    <div class="toggle-label">Orthogonal Placement (90°)</div>
-                    <div class="iso-val">+25 dB Isolation</div>
-                </div>
-                <label class="toggle-switch"><input type="checkbox" id="chk-ortho" onchange="updateSim()"><span class="slider"></span></label>
-            </div>
+  <div class="panel">
+    <h3>Result while UHF is transmitting</h3>
+    <div>1. Blocking - 401 MHz carrier at LNA input (limit -20 dBm)</div>
+    <div class="bar"><span id="b-lna"></span></div>
+    <div>2. Blocking - 401 MHz carrier at SDR input (limit -40 dBm)</div>
+    <div class="bar"><span id="b-sdr"></span></div>
+    <div>3. In-band UHF noise / AIS noise floor (limit -5.9 dB for 1 dB desense)</div>
+    <div class="bar"><span id="b-inb"></span></div>
+    <div class="status" id="status"></div>
+    <div class="kv" id="kv"></div>
+    <div class="note">Values tagged ASSUMED in sim/params.py are placeholders until KNACKSAT-3 hardware data
+    is available. Old version of this page added +60 dB "isolation" for blanking and used 5 dB spacing loss;
+    both were wrong (blanking removes reception time, not power).</div>
+  </div>
+</div>
 
-            <div class="toggle-row" id="row-filter">
-                <div>
-                    <div class="toggle-label">Front-End SAW Filter</div>
-                    <div class="iso-val">+90 dB Isolation</div>
-                </div>
-                <label class="toggle-switch"><input type="checkbox" id="chk-filter" onchange="updateSim()"><span class="slider"></span></label>
-            </div>
-
-            <div class="toggle-row" id="row-shield">
-                <div>
-                    <div class="toggle-label">RF Shielding Cans</div>
-                    <div class="iso-val">+20 dB Isolation</div>
-                </div>
-                <label class="toggle-switch"><input type="checkbox" id="chk-shield" onchange="updateSim()"><span class="slider"></span></label>
-            </div>
-
-            <div class="toggle-row" id="row-blank">
-                <div>
-                    <div class="toggle-label">Time-Division (Blanking)</div>
-                    <div class="iso-val">+60 dB Isolation</div>
-                </div>
-                <label class="toggle-switch"><input type="checkbox" id="chk-blank" onchange="updateSim()"><span class="slider"></span></label>
-            </div>
-
-            <div class="data-display">
-                <div>Total Isolation: <span id="val-iso">5</span> dB</div>
-                <div>UHF Tx Power: 1W (30 dBm)</div>
-                <div>Leakage at Rx: <span id="val-leak">25</span> dBm</div>
-            </div>
-        </div>
-
-        <!-- Visual & Status Panel -->
-        <div class="panel" style="flex: 1.2;">
-            <h2 style="margin-top:0; border-bottom:1px solid #334155; padding-bottom:10px;">System Status</h2>
-            
-            <div class="visual-container">
-                <div class="cubesat" id="sat-body">
-                    <div class="ant-vhf" id="ant-vhf"></div>
-                    <div class="ant-uhf" id="ant-uhf"></div>
-                    <div class="shield-wall" id="shield-wall"></div>
-                    <div class="filter-icon" id="filter-icon">📡🛡️</div>
-                </div>
-            </div>
-
-            <div class="status-text" id="status-text" style="color: var(--danger);">⚠️ AIS RECEIVER DESTROYED</div>
-
-            <div class="meter-container">
-                <div class="meter-labels">
-                    <span>+30 dBm</span>
-                    <span>0 dBm</span>
-                    <span>-50 dBm</span>
-                    <span>-100 dBm</span>
-                </div>
-                <div class="meter-bar">
-                    <div class="meter-line" title="Safe Threshold (-70 dBm)"></div>
-                    <div class="meter-fill" id="meter-fill"></div>
-                </div>
-                <div style="font-size: 0.8rem; color: var(--safe);">
-                    <strong>Safe Zone:</strong><br>Below -70 dBm<br>(Noise Floor)
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Simulation Physics Constants
-        const TX_POWER_DBM = 30; // 1 Watt
-        const BASE_SPACING_ISO = 5; // Isolation from 17.3cm spacing only
-        const SAFE_THRESHOLD = -70; // dBm
-
-        function updateSim() {
-            const isOrtho = document.getElementById('chk-ortho').checked;
-            const isFilter = document.getElementById('chk-filter').checked;
-            const isShield = document.getElementById('chk-shield').checked;
-            const isBlank = document.getElementById('chk-blank').checked;
-
-            // 1. Calculate Total Isolation
-            let iso = BASE_SPACING_ISO;
-            if(isOrtho) iso += 25;
-            if(isFilter) iso += 90;
-            if(isShield) iso += 20;
-            if(isBlank) iso += 60;
-
-            // 2. Calculate Leakage at Receiver Input
-            let leakage = TX_POWER_DBM - iso;
-
-            // 3. Update Text Data
-            document.getElementById('val-iso').innerText = iso;
-            document.getElementById('val-leak').innerText = leakage;
-
-            // 4. Update Visual Toggles
-            document.getElementById('row-ortho').classList.toggle('active', isOrtho);
-            document.getElementById('row-filter').classList.toggle('active', isFilter);
-            document.getElementById('row-shield').classList.toggle('active', isShield);
-            document.getElementById('row-blank').classList.toggle('active', isBlank);
-
-            // 5. Update Satellite Visualization
-            const uhfAnt = document.getElementById('ant-uhf');
-            const vhfAnt = document.getElementById('ant-vhf');
-            
-            // Orthogonal: Rotate UHF 90 degrees
-            uhfAnt.style.transform = isOrtho ? "rotate(90deg) translateX(10px)" : "rotate(0deg)";
-            vhfAnt.style.transform = isOrtho ? "rotate(-90deg) translateX(-10px)" : "rotate(0deg)";
-            
-            // Shielding: Show wall
-            document.getElementById('shield-wall').classList.toggle('active', isShield);
-            document.getElementById('filter-icon').classList.toggle('active', isFilter);
-
-            // Blanking: Pulse UHF antenna to show it's "Off"
-            uhfAnt.style.opacity = isBlank ? "0.3" : "1.0";
-            uhfAnt.style.boxShadow = isBlank ? "none" : "0 0 10px var(--danger)";
-
-            // 6. Update Safety Meter & Status
-            const meterFill = document.getElementById('meter-fill');
-            const statusText = document.getElementById('status-text');
-
-            // Map -100 to +40 dBm to percentage (0% to 100%)
-            // Range is 140dB. 0dBm is roughly 64% up the bar.
-            let pct = ((leakage + 100) / 140) * 100;
-            pct = Math.max(0, Math.min(100, pct)); // Clamp
-            
-            meterFill.style.height = pct + "%";
-
-            if (leakage <= SAFE_THRESHOLD) {
-                statusText.innerText = "✅ AIS RECEIVER SAFE";
-                statusText.style.color = "var(--safe)";
-                meterFill.style.backgroundColor = "var(--safe)";
-                meterFill.style.boxShadow = "0 0 10px var(--safe)";
-            } else if (leakage <= 0) {
-                statusText.innerText = "⚠️ HIGH RISK OF SATURATION";
-                statusText.style.color = "var(--warn)";
-                meterFill.style.backgroundColor = "var(--warn)";
-            } else {
-                statusText.innerText = "🔥 AIS RECEIVER DESTROYED";
-                statusText.style.color = "var(--danger)";
-                meterFill.style.backgroundColor = "var(--danger)";
-            }
-        }
-
-        // Initialize
-        updateSim();
-    </script>
+<script>
+// Design values from results/coupling.json and results/feed_sensitivity.json (p95)
+const COUPLING = { 3: {c401: -34.9, c162: -22.6}, 10: {c401: -39.9, c162: -49.6} };
+const TX_FEED = 0.5, AIS_FEED = 0.3, SAW_REJ = 40, SAW_IL = 2.5, PCB_CAP = 65;
+const LNA_G = 20, LNA_NF = 1.0, BE_NF = 6.0, LNA_LIM = -20, SDR_LIM = -40;
+const BW_DB = 10*Math.log10(16e3), TXF = 50, DESENSE_IN = 10*Math.log10(Math.pow(10,0.1)-1);
+const PKT_S = 300*8/9600, GUARD = 0.005+0.010+256/9600, LOSS_DAILY = 2.2, LOSS_PASS = 58;
+const lin = x => Math.pow(10, x/10), db = x => 10*Math.log10(x);
+const sum = (...a) => db(a.reduce((s,x)=>s+lin(x),0));
+function nf(pre, post){ // Friis, referred to antenna port
+  let st=[[-AIS_FEED,AIS_FEED]]; if(pre) st.push([-SAW_IL,SAW_IL]); st.push([LNA_G,LNA_NF]);
+  if(post) st.push([-SAW_IL,SAW_IL]); st.push([0,BE_NF]);
+  let F=0,G=1; st.forEach(([g,n],i)=>{ F = i? F+(lin(n)-1)/G : lin(n); G*=lin(g); }); return db(F);
+}
+function setBar(id, val, lim, lo, hi){
+  const el=document.getElementById(id); const pct=Math.max(2,Math.min(100,(val-lo)/(hi-lo)*100));
+  el.style.width=pct+'%'; el.style.background = val<=lim ? 'var(--safe)' : 'var(--danger)';
+}
+function update(){
+  const g=id=>document.getElementById(id);
+  const ptx=+g('ptx').value, c=COUPLING[g('gap').value], pre=g('pre').checked, post=g('post').checked;
+  const can=g('can').checked, txf=g('txf').checked, tdd=g('tdd').checked, nd=+g('noise').value;
+  ['pre','post','can','txf','tdd'].forEach(k=>g('r-'+k).classList.toggle('on', g(k).checked));
+  g('nlbl').textContent = nd+' dBc/Hz (assumed - measure)';
+  const pAnt = ptx - TX_FEED - (txf?0.8:0) + c.c401 - AIS_FEED;
+  const pBoard = ptx - (can?90:70);
+  const rPre = pre?SAW_REJ:0, rPost = post?SAW_REJ:0, rTot=Math.min(rPre+rPost,PCB_CAP);
+  const lna = sum(pAnt-rPre, pBoard), sdr = sum(pAnt-rTot, pBoard-rPost)+LNA_G;
+  const NF = nf(pre,post), floor = -174+BW_DB+NF;
+  const inb = ptx + nd + BW_DB - (txf?TXF:0) + c.c162 - AIS_FEED;
+  const iN = inb - floor, des = db(1+lin(iN));
+  setBar('b-lna', lna, LNA_LIM, -80, 20); setBar('b-sdr', sdr, SDR_LIM, -80, 20); setBar('b-inb', iN, DESENSE_IN, -40, 40);
+  const blockOK = lna<=LNA_LIM && sdr<=SDR_LIM, inbOK = iN<=DESENSE_IN;
+  let st, cls;
+  if (tdd) {
+    st = blockOK ? 'AIS SAFE - blanked during TX, recovers within the 10 ms guard'
+                 : 'AIS blanked during TX, but front end is overdriven: slow recovery / risk - add SAW';
+    cls = blockOK ? 'ok' : 'warn';
+  } else if (blockOK && inbOK) { st='AIS keeps receiving during UHF TX'; cls='ok'; }
+  else if (blockOK) { st='AIS desensitised by '+des.toFixed(1)+' dB during TX - add TX filter or time-division'; cls='bad'; }
+  else { st='AIS front end blocked during TX'; cls='bad'; }
+  g('status').textContent=st; g('status').className='status '+cls;
+  g('kv').innerHTML =
+    `Antenna coupling 401 / 162 MHz: ${c.c401} / ${c.c162} dB<br>`+
+    `401 MHz at AIS antenna port: ${pAnt.toFixed(1)} dBm<br>`+
+    `LNA input: ${lna.toFixed(1)} dBm (margin ${(LNA_LIM-lna).toFixed(1)} dB)<br>`+
+    `SDR input: ${sdr.toFixed(1)} dBm (margin ${(SDR_LIM-sdr).toFixed(1)} dB)<br>`+
+    `System NF ${NF.toFixed(2)} dB, noise floor ${floor.toFixed(1)} dBm / 16 kHz<br>`+
+    `In-band UHF noise: ${inb.toFixed(1)} dBm, I/N ${iN.toFixed(1)} dB, desense ${tdd?'0 (blanked)':des.toFixed(1)+' dB'}<br>`+
+    (tdd ? `AIS messages lost: ~${LOSS_DAILY}% daily average, ~${LOSS_PASS}% during a ground pass` : 'No AIS time lost');
+}
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',update));
+update();
+</script>
 </body>
 </html>
-
-							<script>
-                            	
-							</script>
-                        </body>
-                        </html>
-                    

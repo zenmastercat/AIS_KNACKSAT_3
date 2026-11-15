@@ -1,0 +1,174 @@
+{
+ "coupling_design_values": {
+  "C401": -34.89675778488415,
+  "C401_med": -44.98127763798803,
+  "C162": -22.610435012524828,
+  "C162_med": -33.728199281341446
+ },
+ "blocking_no_cans": {
+  "p_carrier_at_ais_port_dBm": -2.6967577848841513,
+  "p_board_dBm": -37.0,
+  "rows": [
+   {
+    "arch": "A0  no filter",
+    "lna_in_dBm": -2.695145731258819,
+    "sdr_in_dBm": 17.30485426874118,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": -17.30485426874118,
+    "sdr_margin_dB": -57.30485426874118,
+    "NF_dB": 1.4016400384227523,
+    "noise_floor_dBm": -130.557160135018
+   },
+   {
+    "arch": "A1  LNA -> SAW",
+    "lna_in_dBm": -2.695145731258819,
+    "sdr_in_dBm": -22.695145731258812,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": -17.30485426874118,
+    "sdr_margin_dB": -17.304854268741188,
+    "NF_dB": 1.5048179514765045,
+    "noise_floor_dBm": -130.45398222196425
+   },
+   {
+    "arch": "A2  SAW -> LNA",
+    "lna_in_dBm": -35.96417075999362,
+    "sdr_in_dBm": -15.964170759993621,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": 15.964170759993621,
+    "sdr_margin_dB": -24.03582924000638,
+    "NF_dB": 3.9016400384227525,
+    "noise_floor_dBm": -128.057160135018
+   },
+   {
+    "arch": "A3  SAW -> LNA -> SAW",
+    "lna_in_dBm": -35.96417075999362,
+    "sdr_in_dBm": -47.214663043904764,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": 15.964170759993621,
+    "sdr_margin_dB": 7.214663043904764,
+    "NF_dB": 4.004817951476505,
+    "noise_floor_dBm": -127.95398222196424
+   }
+  ]
+ },
+ "blocking_with_cans": {
+  "p_carrier_at_ais_port_dBm": -2.6967577848841513,
+  "p_board_dBm": -57.0,
+  "rows": [
+   {
+    "arch": "A0  no filter",
+    "lna_in_dBm": -2.696741661385574,
+    "sdr_in_dBm": 17.303258338614427,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": -17.303258338614427,
+    "sdr_margin_dB": -57.30325833861443,
+    "NF_dB": 1.4016400384227523,
+    "noise_floor_dBm": -130.557160135018
+   },
+   {
+    "arch": "A1  LNA -> SAW",
+    "lna_in_dBm": -2.696741661385574,
+    "sdr_in_dBm": -22.696741661385566,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": -17.303258338614427,
+    "sdr_margin_dB": -17.303258338614434,
+    "NF_dB": 1.5048179514765045,
+    "noise_floor_dBm": -130.45398222196425
+   },
+   {
+    "arch": "A2  SAW -> LNA",
+    "lna_in_dBm": -42.538443419035374,
+    "sdr_in_dBm": -22.538443419035374,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": 22.538443419035374,
+    "sdr_margin_dB": -17.461556580964626,
+    "NF_dB": 3.9016400384227525,
+    "noise_floor_dBm": -128.057160135018
+   },
+   {
+    "arch": "A3  SAW -> LNA -> SAW",
+    "lna_in_dBm": -42.538443419035374,
+    "sdr_in_dBm": -47.69166206813779,
+    "lna_limit_dBm": -20.0,
+    "sdr_limit_dBm": -40.0,
+    "lna_margin_dB": 22.538443419035374,
+    "sdr_margin_dB": 7.691662068137788,
+    "NF_dB": 4.004817951476505,
+    "noise_floor_dBm": -127.95398222196424
+   }
+  ]
+ },
+ "inband_tx_noise": {
+  "no_tx_filter": {
+   "I_at_ais_port_dBm": -97.86923518596558,
+   "noise_floor_dBm": -127.95398222196424,
+   "I_over_N_dB": 30.08474703599866,
+   "desense_dB": 30.08900396830118,
+   "tx_filter_needed_dB": 35.95300027979982
+  },
+  "with_tx_filter": {
+   "I_at_ais_port_dBm": -147.86923518596558,
+   "noise_floor_dBm": -127.95398222196424,
+   "I_over_N_dB": -19.91525296400134,
+   "desense_dB": 0.044060975041148094,
+   "tx_filter_needed_dB": 35.95300027979982
+  }
+ },
+ "tx_filter_needed_vs_tx_noise_dBc_Hz": {
+  "-130": 55.95300027979982,
+  "-140": 45.95300027979982,
+  "-150": 35.95300027979982,
+  "-160": 25.953000279799813,
+  "-170": 15.953000279799813
+ },
+ "time_division": {
+  "packet_s": 0.25,
+  "loss_beacon_only": 0.009722222222222222,
+  "loss_during_pass": 0.5833333333333334,
+  "loss_daily_average": 0.022469135802469137,
+  "uhf_tx_time_per_day_s": 1664.0
+ },
+ "saw_thermal": {
+  "quartz": {
+   "extra_loss_qual_worst_dB": 5.702104300731037e-06,
+   "shift_qual_worst_kHz": 23.271300000004658
+  },
+  "litao3": {
+   "extra_loss_qual_worst_dB": 0.6215471214039132,
+   "shift_qual_worst_kHz": 336.9600000000048
+  }
+ },
+ "detection_probability_60_reports": {
+  "p_msg=0.01": {
+   "loss=0.00": 0.4528433576092388,
+   "loss=0.02": 0.44534225894838486,
+   "loss=0.10": 0.4186746401495358,
+   "loss=0.50": 0.2597390423032955
+  },
+  "p_msg=0.05": {
+   "loss=0.00": 0.953930201013048,
+   "loss=0.02": 0.9505446194927053,
+   "loss=0.10": 0.9368748686176618,
+   "loss=0.50": 0.7810842834236497
+  },
+  "p_msg=0.2": {
+   "loss=0.00": 0.9999984675044591,
+   "loss=0.02": 0.9999978553176992,
+   "loss=0.10": 0.9999932573418292,
+   "loss=0.50": 0.9982029897000856
+  }
+ },
+ "orbit_period_s": 5668.144369061165,
+ "old_sim_numbers": {
+  "old_fspl_isolation_dB": 14.512887452403643,
+  "old_total_isolation_dB": 144.51288745240365,
+  "old_saw_detune_loss_max_dB": 899.7282000000002
+ }
+}
