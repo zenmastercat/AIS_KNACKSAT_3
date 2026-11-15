@@ -1,7 +1,12 @@
 [project]
-name = "code"
-version = "0.1.0"
-description = "Add your description here"
+name = "ais-knacksat-3"
+version = "0.2.0"
+description = "KNACKSAT-3 AIS 162 MHz / UHF 401 MHz coexistence simulations (1U CubeSat)"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "PyNEC",
+    "python-docx",
+]
